@@ -18,8 +18,6 @@ export function Hero() {
     setIsTyping(true);
     
     try {
-      // We send the message to the chat API. 
-      // Since it's a guest, the API will now handle it gracefully as per our recent fix.
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,15 +29,15 @@ export function Hero() {
 
       if (response.ok) {
         const data = await response.json();
-        // Instead of showing the full answer here, we guide them to the full consultation
-        alert(`Acharya Dev says: ${data.response.substring(0, 100)}...\n\nTo get a detailed Vedic reading, please provide your birth details.`);
+        // Show a snippet of the answer and guide them to the intake form for a full reading
+        alert(`Acharya Dev says: ${data.response.substring(0, 150)}...\n\nTo receive a complete personalized reading, please provide your birth details.`);
         router.push("/intake");
       } else {
-        alert("The stars are currently aligned in a way that prevents a connection. Please try again later.");
+        alert("The stars are currently turbulent. Please try again in a moment.");
       }
     } catch (error) {
       console.error("Chat error:", error);
-      alert("Connection error. Please try again.");
+      alert("Connection error. Please check your internet.");
     } finally {
       setIsTyping(false);
       setChatInput("");
@@ -73,22 +71,26 @@ export function Hero() {
             Get personalized guidance based on your birth chart.
           </p>
 
-          {/* QUICK CHAT BOX - FIX FOR TC-01 */}
-          <div className="w-full max-w-xl p-2 rounded-2xl glass border border-primary/30 glow-gold shadow-2xl">
+          {/* QUICK CHAT WIDGET - FIX FOR TC-01 */}
+          <div className="w-full max-w-xl p-1 rounded-2xl glass border border-primary/30 glow-gold shadow-2xl bg-background/50 backdrop-blur-sm">
             <form onSubmit={handleQuickChat} className="flex gap-2 p-2">
               <input 
                 type="text" 
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask a quick cosmic question..." 
-                className="flex-1 bg-transparent border-none outline-none px-4 text-foreground placeholder:text-muted-foreground"
+                placeholder="Ask a quick cosmic question... (e.g. How is my career?)" 
+                className="flex-1 bg-transparent border-none outline-none px-4 text-foreground placeholder:text-muted-foreground text-base"
               />
               <Button 
                 type="submit" 
                 disabled={isTyping}
-                className="gradient-gold text-background rounded-xl px-4"
+                className="gradient-gold text-background rounded-xl px-4 py-2"
               >
-                {isTyping ? "..." : <Send className="w-4 h-4" />}
+                {isTyping ? (
+                  <div className="w-4 h-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
               </Button>
             </form>
           </div>
@@ -140,7 +142,7 @@ export function Hero() {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">98%</div>
-              <div class="text-sm text-muted-foreground">Accuracy Rate</div>
+              <div className="text-sm text-muted-foreground">Accuracy Rate</div>
             </div>
           </div>
         </div>

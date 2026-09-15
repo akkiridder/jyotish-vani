@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const { message, sessionId } = await req.json();
     const supabase = await createClient();
     
-    // 1. Check for User (Optional for Guest Mode)
     const { data: { user } } = await supabase.auth.getUser();
     
     let birthDetails = null;
@@ -15,15 +14,16 @@ export async function POST(req: Request) {
 
     if (user) {
       userRole = "Registered User";
+      // Use maybeSingle() instead of single() to avoid 406 error when no row exists
       const { data } = await supabase
         .from("user_birth_details")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
+
       birthDetails = data;
     }
 
-    // 2. Fetch recent conversation history if sessionId exists
     let history: ChatHistoryItem[] = [];
     if (sessionId) {
       const { data: pastMessages } = await supabase
@@ -41,8 +41,6 @@ export async function POST(req: Request) {
       }
     }
 
-    // 3. Construct the Deep Vedic Persona
-    // If birthDetails are missing, the persona asks the user politely for them
     const systemPrompt = `
       You are "Acharya Dev", a master of Vedic Astrology (Jyotish).
       USER PROFILE:
@@ -60,7 +58,6 @@ export async function POST(req: Request) {
       - Constraint: Never mention you are an AI or language model. Maintain the persona of a revered Vedic scholar.
     `;
 
-    // 4. Get response from NVIDIA LLM with conversational context
     const aiResponse = await generateVedicResponse(systemPrompt, message, history);
 
     return NextResponse.json({ response: aiResponse });
