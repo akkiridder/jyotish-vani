@@ -13,8 +13,8 @@ export async function generateVedicResponse(
     "base64"
   ).toString("utf-8");
 
-  // Updated to use OPENCODE_API_KEY as per Vercel settings
-  const apiKey = process.env.OPENCODE_API_KEY || fallbackKey;
+  // Updated to use NVIDIA_API_KEY as per Vercel settings
+  const apiKey = process.env.NVIDIA_API_KEY || fallbackKey;
 
   const formattedHistory = history.map((h) => ({
     role: h.role,
