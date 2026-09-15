@@ -13,7 +13,8 @@ export async function generateVedicResponse(
     "base64"
   ).toString("utf-8");
 
-  const apiKey = process.env.OPENROUTER_API_KEY || fallbackKey;
+  // Updated to use OPENCODE_API_KEY as per Vercel settings
+  const apiKey = process.env.OPENCODE_API_KEY || fallbackKey;
 
   const formattedHistory = history.map((h) => ({
     role: h.role,
@@ -33,7 +34,7 @@ export async function generateVedicResponse(
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://jyotish-vani.vercel.app",
+          "HTTP-Referer": "https://jyotish-vani-zeta.vercel.app",
           "X-Title": "Jyotish Vani AI Consultation",
         },
         body: JSON.stringify({
