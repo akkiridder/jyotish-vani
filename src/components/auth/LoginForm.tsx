@@ -55,12 +55,12 @@ export default function LoginForm() {
         description: "Logged in successfully.",
       });
 
-      // Check if user has completed intake
+      // FIX: Use maybeSingle() instead of single() to avoid 406 error when no row exists
       const { data: birthDetails } = await supabase
         .from("user_birth_details")
         .select("id")
         .eq("user_id", data.user.id)
-        .single();
+        .maybeSingle();
 
       if (birthDetails) {
         router.push("/consultation");

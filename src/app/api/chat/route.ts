@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         .from("user_birth_details")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
       birthDetails = data;
     }
 
