@@ -32,12 +32,11 @@ export async function generateVedicResponse(
   userMessage: string,
   history: ChatHistoryItem[] = []
 ) {
-  // SECURITY: Removed base64 fallback key to prevent leaks.
-  // Only use environment variables.
+  // SECURITY: HARDCODED KEY REMOVED. Using only Environment Variables.
   const apiKey = process.env.NVIDIA_API_KEY || process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
-    console.error("Critical Error: AI API Key is missing in environment variables.");
+    console.error("CRITICAL: AI API Key is missing in Vercel Environment Variables.");
     return "Namaste. The cosmic connection is currently interrupted. Please contact the Acharya.";
   }
 
@@ -46,10 +45,11 @@ export async function generateVedicResponse(
     content: h.content,
   }));
 
+  // Swapping 429'd models for more stable ones
   const candidateModels = [
     "nvidia/nemotron-3.5-lightning:free",
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
+    "meta-llama/llama-3.1-8b-instruct:free",
+    "google/gemma-2-9b-it:free",
   ];
 
   for (const model of candidateModels) {
@@ -78,17 +78,13 @@ export async function generateVedicResponse(
         const data = await response.json();
         const content = data.choices?.[0]?.message?.content;
         if (content) {
-          // STRIP REASONING before returning
           return stripReasoning(content);
         }
-      } else {
-        const errText = await response.text();
-        console.error(`OpenRouter model ${model} error:`, errText);
       }
     } catch (e) {
       console.error(`Attempt with model ${model} failed:`, e);
     }
   }
 
-  return "Namaste. The cosmic energies are currently turbulent, and I cannot reach the stars. Please try again in a moment.";
+  return "Namaste. The cosmic energies are currently turbulent. Please try again in a moment.";
 }
